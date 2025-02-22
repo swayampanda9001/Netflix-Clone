@@ -1,0 +1,140 @@
+/* Home.css */
+.Home {
+  width: 100%;
+  font-family: Arial, sans-serif;
+}
+
+.top-image{
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+}
+
+.top-image::before{
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 500;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.tiger {
+  position: relative;
+  width: 100%;
+  height: 70%; /* Adjust height to allocate space below for buttons */
+  overflow: hidden;
+}
+
+.tiger img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.protector {
+  position: absolute;
+  z-index: 600;
+  width: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 20px; /* Space between image and text/buttons */
+}
+
+.protector h1 {
+  font-size: 6rem;
+  margin-bottom: 1rem;
+}
+
+.protector .lorem {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.buttons {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: start;
+  gap: 8px;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+.play {
+  background-color: white;
+  color: black;
+}
+
+.play:hover {
+  background-color: #b74154;
+}
+
+.info {
+  background-color: #0d0d0e;
+}
+
+.info:hover {
+  background-color: #d7640c;
+}
+.more-cards{
+  position: relative;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.titlecards {
+  width: 100%;
+  position: absolute;
+  bottom: 30px;
+  z-index: 600;
+  padding: 0px 20px;
+  overflow-x: auto;
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar for IE */
+}
+
+.titlecards::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari */
+}
+.titlecards h2 {
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+
+.more-titlecards{
+  width: 100%;
+  padding: 0px 20px;
+  overflow-x: auto;
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar for IE */
+}
+
+.more-titlecards h2 {
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+
+.more-titlecards::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari */
+}
