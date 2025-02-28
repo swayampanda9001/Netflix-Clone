@@ -1,10 +1,10 @@
 import React from "react";
 import "./Home.css";
-import Navbar from "../../components/navbar/navbar";
+import Navbar from "../../components/Navbar/Navbar";
 import { FaPlay } from "react-icons/fa";
 import { LuBadgeInfo } from "react-icons/lu";
-import TitleCards from "../../components/titlecards/titlecards";
-import Footer from "../../components/footer/footer";
+import TitleCards from "../../components/Titlecards/Titlecards";
+import Footer from "../../components/Footer/Footer";
 
 const Home = () => {
   return (
