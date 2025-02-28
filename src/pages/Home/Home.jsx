@@ -3,7 +3,7 @@ import "./Home.css";
 import Navbar from "../../components/Navbar/Navbar";
 import { FaPlay } from "react-icons/fa";
 import { LuBadgeInfo } from "react-icons/lu";
-import TitleCards from "../../components/Titlecards/Titlecards";
+import TitleCards from "../../components/TitleCards/TitleCards";
 import Footer from "../../components/Footer/Footer";
 
 const Home = () => {
