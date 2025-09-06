@@ -51,7 +51,7 @@ const Login = () => {
   return (
     <div className="login">
       <div className="login-background">
-        <img src="/public/loin-bg.jpg" alt="Background" />
+        <img src="/loin-bg.jpg" alt="Background" />
         <div className="login-overlay"></div>
       </div>
       <div className="login-header">
