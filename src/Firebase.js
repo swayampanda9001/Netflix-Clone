@@ -4,9 +4,11 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut,
 } from "firebase/auth";
-import { addDoc, getFirestore } from "firebase/firestore";
+import { addDoc, getFirestore, collection } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBu1BhOD5eMqKr7jmRrBZusIqZdA50Bv7Q",
@@ -22,13 +24,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
 
 const signup = async (name, email, password) => {
   try {
     const res = await createUserWithEmailAndPassword(auth, email, password);
     const user = res.user;
     console.log(user);
-    await addDoc(db, "users", {
+    await addDoc(collection(db, "users"), {
       uid: user.uid,
       email: user.email,
       name: name,
@@ -36,7 +39,7 @@ const signup = async (name, email, password) => {
     });
   } catch (error) {
     console.log(error);
-    alert(error);
+    alert(error.message);
   }
 };
 
@@ -47,7 +50,25 @@ const login = async (email, password) => {
     console.log(user);
   } catch (error) {
     console.log(error);
-    alert(error);
+    alert(error.message);
+  }
+};
+
+const signInWithGoogle = async () => {
+  try {
+    const res = await signInWithPopup(auth, googleProvider);
+    const user = res.user;
+    console.log(user);
+    // Check if user exists in database, if not add them
+    await addDoc(collection(db, "users"), {
+      uid: user.uid,
+      email: user.email,
+      name: user.displayName,
+      authProvider: "google",
+    });
+  } catch (error) {
+    console.log(error);
+    alert(error.message);
   }
 };
 
@@ -55,4 +76,4 @@ const logout = async () => {
   signOut(auth);
 };
 
-export { auth, db, signup, login, logout };
+export { auth, db, signup, login, signInWithGoogle, logout };

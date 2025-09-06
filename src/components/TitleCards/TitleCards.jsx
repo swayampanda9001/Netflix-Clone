@@ -1,47 +1,66 @@
 import React, { useEffect, useState } from "react";
 import "./TitleCards.css";
-import { movies_data } from "../../assets/data/card.data";
 import { Link } from "react-router-dom";
+import { useMovies } from "../../context/MovieContext";
 
 const TitleCards = ({ title, category }) => {
-  const [apiData, setApiData] = useState([]); //it will be empty coj it will store the data from api in form of array
-  const options = {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      Authorization:
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3ODU4MjM5MDAyNjhjM2JkMDg0OWQ5OThhNmUyOTMyOCIsIm5iZiI6MTczOTYxMzYzNS4zMzYsInN1YiI6IjY3YjA2NWMzMWYzODQxZWUxNzZjNDJjZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5C3tDNitm-Rh7BkgGxT15G_k3xoP5CUts35IhkUIPsY",
-    },
-  };
+  const [apiData, setApiData] = useState([]);
+  const { getMoviesByCategory, loading, error, TMDB_IMAGE_BASE_URL } = useMovies();
 
   useEffect(() => {
-    //jese hin page load hoga function run karega
-    fetch(
-      `https://api.themoviedb.org/3/movie/${
-        category ? category : "now_playing"
-      }?language=en-US&page=1`,
-      options
-    ) //request bhejta hei iss wale link pe
-      .then((res) => res.json())
-      .then((res) => setApiData(res.results))
-      .catch((err) => console.error(err));
-  }, []);
+    const fetchData = async () => {
+      try {
+        const categoryToFetch = category || "now_playing";
+        const movies = await getMoviesByCategory(categoryToFetch);
+        setApiData(movies.slice(0, 15)); // Limit to 15 movies for better performance
+      } catch (err) {
+        console.error('Error fetching movies:', err);
+      }
+    };
+
+    fetchData();
+  }, [category, getMoviesByCategory]);
+
+  if (loading && apiData.length === 0) {
+    return (
+      <div className="title-cards-loading">
+        <h2>{title ? title : "Popular on Netflix"}</h2>
+        <div className="loading-placeholder">
+          {[...Array(10)].map((_, index) => (
+            <div key={index} className="card-placeholder"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error && apiData.length === 0) {
+    return (
+      <div className="title-cards-error">
+        <h2>{title ? title : "Popular on Netflix"}</h2>
+        <p>Failed to load movies. Please try again later.</p>
+      </div>
+    );
+  }
 
   return (
-    <>
+    <div className="title-cards-container">
       <h2>{title ? title : "Popular on Netflix"}</h2>
       <div className="cards-list">
-        {apiData.map((movie, index) => (
-          <Link to={`/player/${movie.id}`} key={index} className="titlecard">
+        {apiData.map((movie) => (
+          <Link to={`/player/${movie.id}`} key={movie.id} className="titlecard">
             <img
-              src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}
-              alt={movie.movieName}
+              src={movie.image}
+              alt={movie.title}
+              onError={(e) => {
+                e.target.src = '/api/placeholder/300/450';
+              }}
             />
-            <p>{movie.original_title}</p>
+            <p>{movie.title}</p>
           </Link>
         ))}
       </div>
-    </>
+    </div>
   );
 };
 

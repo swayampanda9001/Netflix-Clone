@@ -1,10 +1,31 @@
 .Navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  background-color: #141414;
+  padding: 15px 4%;
+  background: linear-gradient(180deg, rgba(0,0,0,0.7) 10%, transparent);
   color: white;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.Navbar.scrolled {
+  background-color: #141414;
+  backdrop-filter: blur(10px);
+}
+
+.Navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.netflix-logo {
+  font-size: 2rem;
+  color: #e50914;
 }
 
 .Navbar-left ul {
@@ -12,76 +33,154 @@
   list-style: none;
   padding: 0;
   margin: 0;
+  gap: 1.5rem;
 }
 
 .Navbar-left ul li {
-  margin: 0 15px;
   cursor: pointer;
   transition: color 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 400;
 }
 
-.Navbar-left ul li:hover {
-  color: red; /* Change to your desired hover color */
+.Navbar-left ul li:hover,
+.Navbar-left ul li.active {
+  color: #b3b3b3;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: inherit;
 }
 
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 1.5rem;
   position: relative;
 }
 
-.navbar-right > * {
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.navbar-right > *:hover {
-  transform: scale(1.2); /* Slight zoom effect on hover */
-}
-
-.dropdown {
-  display: none;
-  position: absolute;
-  top: 30px;
-  right: 0;
-  background-color: #222;
-  padding: 10px;
-  border-radius: 5px;
-  color: white;
-  white-space: nowrap;
-}
-
-.navbar-right:hover .dropdown {
-  display: block;
-}
-
-.dropdown p {
-  margin: 0;
+.nav-icon {
+  font-size: 1.3rem;
   cursor: pointer;
   transition: color 0.3s ease;
 }
 
-.dropdown p:hover {
-  color: red;
+.nav-icon:hover {
+  color: #b3b3b3;
+}
+
+.user-profile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.profile-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.dropdown-icon {
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.user-profile:hover .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  padding: 1rem;
+  border-radius: 4px;
+  min-width: 200px;
+  backdrop-filter: blur(10px);
+  border: 1px solid #333;
+}
+
+.dropdown p {
+  margin: 0 0 0.5rem 0;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.dropdown p:last-child {
+  margin-bottom: 0;
 }
 
 .sign-out {
-  display: block; /* Always visible */
-  background-color: #ba3131;
-  color: #1fa035;
-  padding: 10px 15px;
-  border-radius: 5px;
   cursor: pointer;
-  position: absolute;
-  right: 0;
-  top: 50px;
-  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
-  transform: translateY(0); /* Default position */
+  transition: color 0.3s ease;
+  padding-top: 0.5rem;
+  border-top: 1px solid #333;
 }
 
 .sign-out:hover {
-  background-color: #ff4d4d; /* Change to a lighter red on hover */
-  color: #111; /* Change text color on hover */
-  transform: scale(1.1); /* Slight zoom effect */
+  color: #e50914;
+}
+
+.login-btn {
+  background: #e50914;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+  background: #f40612;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .Navbar {
+    padding: 10px 2%;
+  }
+  
+  .Navbar-left ul {
+    display: none;
+  }
+  
+  .netflix-logo {
+    font-size: 1.5rem;
+  }
+  
+  .navbar-right {
+    gap: 1rem;
+  }
+  
+  .dropdown {
+    right: -20px;
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .Navbar {
+    padding: 8px 3%;
+  }
+  
+  .navbar-right {
+    gap: 0.8rem;
+  }
+  
+  .nav-icon {
+    font-size: 1.1rem;
+  }
+  
+  .profile-img {
+    width: 28px;
+    height: 28px;
+  }
 }

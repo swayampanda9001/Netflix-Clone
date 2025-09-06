@@ -2,30 +2,100 @@ import React, { useEffect, useState } from "react";
 import "./player.css";
 import { FaBackward } from "react-icons/fa6";
 import { Link, useParams } from "react-router-dom";
+import { getMovieVideos, getMovieDetails } from "../../utils/tmdbApi";
 
 const Player = () => {
   const { id } = useParams();
-  const [apiData, setApiData] = useState({});
-  const options = {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      Authorization:
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3ODU4MjM5MDAyNjhjM2JkMDg0OWQ5OThhNmUyOTMyOCIsIm5iZiI6MTczOTYxMzYzNS4zMzYsInN1YiI6IjY3YjA2NWMzMWYzODQxZWUxNzZjNDJjZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5C3tDNitm-Rh7BkgGxT15G_k3xoP5CUts35IhkUIPsY",
-    },
-  };
+  const [videoData, setVideoData] = useState(null);
+  const [movieDetails, setMovieDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(
-      `https://api.themoviedb.org/3/movie/${id}/videos?language=en-US`,
-      options
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        setApiData(res.results[0]);
-      })
-      .catch((err) => console.error(err));
-  }, []);
+    const fetchData = async () => {
+      if (!id) return;
+      if(id === "1234"){
+        setVideoData({
+          key:"80dqOwAOhbo",
+          name:"The Protector | Official Trailer | Netflix",
+          published_at:"2023-01-26T14:00:00.000Z",
+          type:"Trailer"
+        });
+        setMovieDetails({
+          title:"The Protector",
+          description:"An ordinary man becomes an extraordinary protector when ancient secrets and modern dangers collide. Experience the ultimate battle between good and evil in this thrilling adventure that will keep you on the edge of your seat."
+        });
+        setLoading(false);
+        return;
+      }
+      
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // Fetch both video and movie details
+        const [videos, details] = await Promise.all([
+          getMovieVideos(id),
+          getMovieDetails(id)
+        ]);
+        
+        // Find the first trailer or official video
+        const trailer = videos.find(video => 
+          video.type === 'Trailer' && video.site === 'YouTube'
+        ) || videos.find(video => 
+          video.official && video.site === 'YouTube'
+        ) || videos[0];
+        
+        setVideoData(trailer);
+        setMovieDetails(details);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('Failed to load video. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="player">
+        <Link to="/">
+          <FaBackward className="back-icon" />
+        </Link>
+        <div className="player-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading video...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !videoData) {
+    return (
+      <div className="player">
+        <Link to="/">
+          <FaBackward className="back-icon" />
+        </Link>
+        <div className="player-error">
+          <h2>Video Not Available</h2>
+          <p>{error || 'Sorry, this video is not available at the moment.'}</p>
+          {movieDetails && (
+            <div className="movie-details-fallback">
+              <img src={movieDetails.backdrop} alt={movieDetails.title} />
+              <div className="details">
+                <h3>{movieDetails.title}</h3>
+                <p>{movieDetails.description}</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="player">
       <Link to="/">
@@ -33,18 +103,31 @@ const Player = () => {
       </Link>
       <iframe
         width="90%"
-        height="100%"
-        src={`https://www.youtube.com/embed/${apiData.key}`}
-        title="YouTube video player"
-        frameborder="0"
+        height="90%"
+        src={`https://www.youtube.com/embed/${videoData.key}?autoplay=1&controls=1&showinfo=0&rel=0`}
+        title={videoData.name || 'Movie Trailer'}
+        frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        referrerpolicy="strict-origin-when-cross-origin"
-        allowfullscreen
+        referrerPolicy="strict-origin-when-cross-origin"
+        allowFullScreen
       ></iframe>
       <div className="player_info">
-        <p>{apiData?.published_at?.slice(0, 10)}</p>
-        <p>{apiData.name}</p>
-        <p>{apiData.type}</p>
+        <p className="video-date">
+          {videoData.published_at ? new Date(videoData.published_at).toLocaleDateString() : 'Date unavailable'}
+        </p>
+        <h3 className="video-title">{videoData.name || movieDetails?.title}</h3>
+        <p className="video-type">{videoData.type || 'Video'}</p>
+        {movieDetails && (
+          <div className="movie-meta">
+            <p className="movie-rating">⭐ {movieDetails.rating}</p>
+            <p className="movie-year">
+              {movieDetails.release_date ? new Date(movieDetails.release_date).getFullYear() : 'Year unknown'}
+            </p>
+            {movieDetails.runtime && (
+              <p className="movie-runtime">{movieDetails.runtime} min</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

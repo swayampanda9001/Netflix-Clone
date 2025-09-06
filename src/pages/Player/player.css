@@ -1,26 +1,219 @@
 .player {
-  height: 100vh;
+  min-height: 100vh;
+  background-color: #141414;
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  padding: 80px 20px 20px;
+  position: relative;
 }
+
 .player .back-icon {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 30px;
+  left: 30px;
   width: 50px;
+  height: 50px;
   cursor: pointer;
   color: white;
+  transition: color 0.3s ease, transform 0.3s ease;
+  z-index: 100;
 }
+
+.player .back-icon:hover {
+  color: #e50914;
+  transform: scale(1.1);
+}
+
 .player iframe {
   border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  max-width: 100%;
+  aspect-ratio: 16/9;
 }
+
 .player_info {
-  padding: 0px 50px;
-  width: 100%;
+  padding: 20px 0;
+  width: 90%;
+  max-width: 1200px;
+  color: white;
+  margin-top: 20px;
+}
+
+.video-date {
+  color: #b3b3b3;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.video-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: white;
+}
+
+.video-type {
+  color: #e50914;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+
+.movie-meta {
   display: flex;
-  gap: 15px;
-  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.movie-rating,
+.movie-year,
+.movie-runtime {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: white;
+}
+
+.movie-rating {
+  color: #ffd700;
+}
+
+/* Loading and Error States */
+.player-loading,
+.player-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  height: 60vh;
+}
+
+.player-loading .loading-spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #e50914;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
   margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.player-error h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: #e50914;
+}
+
+.player-error p {
+  font-size: 1.1rem;
+  color: #b3b3b3;
+  margin-bottom: 20px;
+}
+
+.movie-details-fallback {
+  display: flex;
+  gap: 20px;
+  max-width: 600px;
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.movie-details-fallback img {
+  width: 150px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.movie-details-fallback .details {
+  flex: 1;
+}
+
+.movie-details-fallback h3 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.movie-details-fallback p {
+  color: #b3b3b3;
+  line-height: 1.5;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .player {
+    padding: 60px 10px 20px;
+  }
+  
+  .player .back-icon {
+    top: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+  }
+  
+  .player iframe {
+    width: 95%;
+    height: 250px;
+  }
+  
+  .player_info {
+    width: 95%;
+    padding: 15px 0;
+  }
+  
+  .video-title {
+    font-size: 1.2rem;
+  }
+  
+  .movie-meta {
+    gap: 10px;
+  }
+  
+  .movie-details-fallback {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .movie-details-fallback img {
+    width: 120px;
+    height: 160px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .player iframe {
+    width: 100%;
+    height: 200px;
+  }
+  
+  .video-title {
+    font-size: 1rem;
+  }
+  
+  .movie-meta {
+    justify-content: center;
+  }
+  
+  .movie-rating,
+  .movie-year,
+  .movie-runtime {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
 }

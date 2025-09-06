@@ -1,0 +1,154 @@
+.search-page {
+  min-height: 100vh;
+  background-color: #141414;
+  color: white;
+}
+
+.search-page-content {
+  padding: 100px 20px 50px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.search-header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.search-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.search-query {
+  font-size: 1.2rem;
+  color: #ccc;
+  margin-bottom: 20px;
+}
+
+.search-query span {
+  color: #e50914;
+  font-weight: 600;
+}
+
+.search-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+}
+
+.loading-spinner {
+  border: 4px solid #333;
+  border-top: 4px solid #e50914;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.search-loading p {
+  font-size: 1.1rem;
+  color: #ccc;
+}
+
+.search-error,
+.no-results,
+.empty-search {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.search-error h2,
+.no-results h2,
+.empty-search h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: #e50914;
+}
+
+.search-error p,
+.no-results p,
+.empty-search p {
+  font-size: 1.1rem;
+  color: #ccc;
+  margin-bottom: 30px;
+}
+
+.back-home-btn {
+  background-color: #e50914;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.back-home-btn:hover {
+  background-color: #f40612;
+}
+
+.search-results-container {
+  margin-top: 20px;
+}
+
+/* Loading screen for auth */
+.loading-screen {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #141414;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .search-page-content {
+    padding: 80px 15px 30px;
+  }
+
+  .search-header h1 {
+    font-size: 2rem;
+  }
+
+  .search-query {
+    font-size: 1rem;
+  }
+
+  .search-error h2,
+  .no-results h2,
+  .empty-search h2 {
+    font-size: 1.5rem;
+  }
+
+  .search-error p,
+  .no-results p,
+  .empty-search p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-page-content {
+    padding: 70px 10px 20px;
+  }
+
+  .search-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .back-home-btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+}
