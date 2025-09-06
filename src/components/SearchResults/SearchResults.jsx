@@ -42,9 +42,9 @@ const SearchResults = ({ showTitle = true }) => {
             <img 
               src={movie.image} 
               alt={movie.title}
-              onError={(e) => {
-                e.target.src = '/api/placeholder/300/450';
-              }}
+              // onError={(e) => {
+              //   e.target.src = '/api/placeholder/300/450';
+              // }}
             />
             <div className="search-result-info">
               <h3>{movie.title}</h3>

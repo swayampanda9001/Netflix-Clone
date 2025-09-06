@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import "./Home.css";
 import Navbar from "../../components/Navbar/Navbar";
 import { FaPlay } from "react-icons/fa";
@@ -12,6 +12,12 @@ import { useNavigate, Link } from "react-router-dom";
 const Home = () => {
   const [user, loading] = useAuthState(auth);
   const navigate = useNavigate();
+  const renderCount = useRef(0);
+
+  useEffect(() => {
+    renderCount.current += 1;
+    console.log(`Home page rendered ${renderCount.current} times`);
+  });
 
   useEffect(() => {
     if (!loading && !user) {
@@ -56,23 +62,23 @@ const Home = () => {
           </div>
 
           <div className="titlecards">
-            <TitleCards title="Popular on Netflix" />
+            <TitleCards key="popular" title="Popular on Netflix" />
           </div>
         </div>
       </div>
 
       <div className="more-cards">
         <div className="more-titlecards">
-          <TitleCards title={"Blockbuster Movies"} category={"top_rated"} />
+          <TitleCards key="top_rated" title={"Blockbuster Movies"} category={"top_rated"} />
         </div>
         <div className="more-titlecards">
-          <TitleCards title={"Only on Netflix"} category={"popular"} />
+          <TitleCards key="popular_netflix" title={"Only on Netflix"} category={"popular"} />
         </div>
         <div className="more-titlecards">
-          <TitleCards title={"Upcoming"} category={"upcoming"} />
+          <TitleCards key="upcoming" title={"Upcoming"} category={"upcoming"} />
         </div>
         <div className="more-titlecards">
-          <TitleCards title={"Top Picks for You"} category={"now_playing"} />
+          <TitleCards key="now_playing" title={"Top Picks for You"} category={"now_playing"} />
         </div>
       </div>
 
@@ -83,4 +89,4 @@ const Home = () => {
 
 
 
-export default Home;
+export default React.memo(Home);

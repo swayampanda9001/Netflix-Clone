@@ -1,27 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./TitleCards.css";
 import { Link } from "react-router-dom";
 import { useMovies } from "../../context/MovieContext";
 
 const TitleCards = ({ title, category }) => {
   const [apiData, setApiData] = useState([]);
-  const { getMoviesByCategory, loading, error, TMDB_IMAGE_BASE_URL } = useMovies();
+  const [isLoading, setIsLoading] = useState(false);
+  const { getMoviesByCategory, error } = useMovies();
+  const fetchedRef = useRef(false);
 
   useEffect(() => {
+    let active = true;
+    if (fetchedRef.current) return; // already fetched once for this mount
+
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const categoryToFetch = category || "now_playing";
         const movies = await getMoviesByCategory(categoryToFetch);
-        setApiData(movies.slice(0, 15)); // Limit to 15 movies for better performance
+        if (active) {
+          setApiData(movies.slice(0, 15)); // Limit to 15 movies for better performance
+          fetchedRef.current = true;
+        }
       } catch (err) {
-        console.error('Error fetching movies:', err);
+        if (active) console.error('Error fetching movies:', err);
+      } finally {
+        if (active) setIsLoading(false);
       }
     };
 
     fetchData();
+    return () => { active = false; };
   }, [category, getMoviesByCategory]);
 
-  if (loading && apiData.length === 0) {
+  if (isLoading && apiData.length === 0) {
     return (
       <div className="title-cards-loading">
         <h2>{title ? title : "Popular on Netflix"}</h2>
@@ -64,4 +76,4 @@ const TitleCards = ({ title, category }) => {
   );
 };
 
-export default TitleCards;
+export default React.memo(TitleCards);

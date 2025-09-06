@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef, useMemo } from 'react';
 
 const MovieContext = createContext();
 
@@ -27,10 +27,15 @@ export const MovieProvider = ({ children }) => {
   const [movies, setMovies] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [lastQuery, setLastQuery] = useState('');
+  const categoryCacheRef = useRef({}); // { category: { ts, data } }
+  const lastSearchRef = useRef('');
+  const searchInFlightRef = useRef(false);
 
   // Function to fetch movies from TMDB API
-  const fetchMovies = async (endpoint) => {
+  const fetchMovies = useCallback(async (endpoint) => {
     try {
       const response = await fetch(`${TMDB_BASE_URL}${endpoint}`, options);
       const data = await response.json();
@@ -49,22 +54,34 @@ export const MovieProvider = ({ children }) => {
       console.error('Error fetching movies:', error);
       throw error;
     }
-  };
+  }, []);
 
-    // Search movies using TMDB API
+  // Search movies using TMDB API
   const searchMovies = useCallback(async (query) => {
-    if (!query.trim()) {
+    const trimmed = query.trim();
+    if (!trimmed) {
       setSearchResults([]);
-      setLoading(false);
+      setSearchLoading(false);
+      lastSearchRef.current = '';
       return;
     }
+    if (lastSearchRef.current === trimmed && !searchInFlightRef.current) {
+      // Same query already loaded and no fetch pending
+      return;
+    }
+    if (searchInFlightRef.current) {
+      // A fetch is already in progress; ignore new trigger
+      return;
+    }
+    searchInFlightRef.current = true;
+    lastSearchRef.current = trimmed;
 
-    setLoading(true);
+    setSearchLoading(true);
     setError(null);
 
     try {
       // Use the exact TMDB search/movie endpoint format as shown
-      const searchUrl = `${TMDB_BASE_URL}/search/movie?query=${encodeURIComponent(query)}&include_adult=false&language=en-US&page=1`;
+      const searchUrl = `${TMDB_BASE_URL}/search/movie?query=${encodeURIComponent(trimmed)}&include_adult=false&language=en-US&page=1`;
       const response = await fetch(searchUrl, options);
       
       if (!response.ok) {
@@ -90,58 +107,47 @@ export const MovieProvider = ({ children }) => {
       })) || [];
       
       setSearchResults(transformedResults);
+      setLastQuery(trimmed);
     } catch (error) {
       setError('Failed to search movies. Please try again.');
       console.error('Search error:', error);
       setSearchResults([]);
     } finally {
-      setLoading(false);
+      setSearchLoading(false);
+      searchInFlightRef.current = false;
     }
   }, []);
 
   // Get movies by category
-  const getMoviesByCategory = async (category) => {
+  const getMoviesByCategory = useCallback(async (category) => {
+    const cat = category || 'popular';
+    const cacheHit = categoryCacheRef.current[cat];
+    // Use cache if available and not older than 5 minutes
+    if (cacheHit && (Date.now() - cacheHit.ts < 5 * 60 * 1000)) {
+      return cacheHit.data;
+    }
+
     setLoading(true);
     setError(null);
-
     try {
       let endpoint;
-      switch (category) {
-        case 'trending':
-          endpoint = '/trending/all/day';
-          break;
-        case 'popular':
-          endpoint = '/movie/popular';
-          break;
-        case 'top_rated':
-          endpoint = '/movie/top_rated';
-          break;
-        case 'upcoming':
-          endpoint = '/movie/upcoming';
-          break;
-        case 'now_playing':
-          endpoint = '/movie/now_playing';
-          break;
-        case 'action':
-          endpoint = '/discover/movie?with_genres=28';
-          break;
-        case 'comedy':
-          endpoint = '/discover/movie?with_genres=35';
-          break;
-        case 'horror':
-          endpoint = '/discover/movie?with_genres=27';
-          break;
-        case 'romance':
-          endpoint = '/discover/movie?with_genres=10749';
-          break;
-        case 'sci-fi':
-          endpoint = '/discover/movie?with_genres=878';
-          break;
-        default:
-          endpoint = '/movie/popular';
+      switch (cat) {
+        case 'trending': endpoint = '/trending/all/day'; break;
+        case 'popular': endpoint = '/movie/popular'; break;
+        case 'top_rated': endpoint = '/movie/top_rated'; break;
+        case 'upcoming': endpoint = '/movie/upcoming'; break;
+        case 'now_playing': endpoint = '/movie/now_playing'; break;
+        case 'action': endpoint = '/discover/movie?with_genres=28'; break;
+        case 'comedy': endpoint = '/discover/movie?with_genres=35'; break;
+        case 'horror': endpoint = '/discover/movie?with_genres=27'; break;
+        case 'romance': endpoint = '/discover/movie?with_genres=10749'; break;
+        case 'sci-fi': endpoint = '/discover/movie?with_genres=878'; break;
+        default: endpoint = '/movie/popular';
       }
 
       const results = await fetchMovies(endpoint);
+      // Store in cache
+      categoryCacheRef.current[cat] = { ts: Date.now(), data: results };
       return results;
     } catch (error) {
       setError('Failed to fetch movies. Please try again.');
@@ -150,15 +156,15 @@ export const MovieProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchMovies]);
 
   // Get trending movies
-  const getTrendingMovies = async () => {
+  const getTrendingMovies = useCallback(async () => {
     return await getMoviesByCategory('trending');
-  };
+  }, [getMoviesByCategory]);
 
   // Get movie details by ID
-  const getMovieDetails = async (movieId) => {
+  const getMovieDetails = useCallback(async (movieId) => {
     try {
       const response = await fetch(`${TMDB_BASE_URL}/movie/${movieId}`, options);
       const movie = await response.json();
@@ -180,21 +186,35 @@ export const MovieProvider = ({ children }) => {
       console.error('Error fetching movie details:', error);
       throw error;
     }
-  };
+  }, []);
 
-  const value = {
+  const value = useMemo(() => ({
     movies,
     searchResults,
     loading,
+    searchLoading,
     error,
     searchMovies,
+    lastQuery,
     getMoviesByCategory,
     getTrendingMovies,
     getMovieDetails,
     setSearchResults,
     setMovies,
     TMDB_IMAGE_BASE_URL
-  };
+  }), [
+    movies,
+    searchResults,
+    loading,
+    searchLoading,
+    error,
+    lastQuery,
+    // Function dependencies are stable due to useCallback
+    searchMovies,
+    getMoviesByCategory,
+    getTrendingMovies,
+    getMovieDetails
+  ]);
 
   return (
     <MovieContext.Provider value={value}>
