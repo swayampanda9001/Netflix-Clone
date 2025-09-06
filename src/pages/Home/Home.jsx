@@ -5,14 +5,11 @@ import { FaPlay } from "react-icons/fa";
 import { LuBadgeInfo } from "react-icons/lu";
 import TitleCards from "../../components/TitleCards/TitleCards";
 import Footer from "../../components/Footer/Footer";
-import SearchResults from "../../components/SearchResults/SearchResults";
-import { useMovies } from "../../context/MovieContext";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../Firebase";
 import { useNavigate, Link } from "react-router-dom";
 
 const Home = () => {
-  const { searchResults } = useMovies();
   const [user, loading] = useAuthState(auth);
   const navigate = useNavigate();
 

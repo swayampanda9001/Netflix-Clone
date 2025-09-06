@@ -15,7 +15,6 @@ const SearchPage = () => {
   const { searchMovies, searchResults, loading, error } = useMovies();
   const [user, authLoading] = useAuthState(auth);
   const [localQuery, setLocalQuery] = useState(query);
-  const [isSearchActive, setIsSearchActive] = useState(true); // Always active on search page
 
   useEffect(() => {
     if (!authLoading && !user) {
